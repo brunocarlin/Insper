@@ -10,3 +10,10 @@ Update my template for templates for this class.
 Improve rmarkdown
 
 Search grammar check for markdown
+
+
+# 2019-07-13
+
+## To Do
+
+Check the Dalex Package
