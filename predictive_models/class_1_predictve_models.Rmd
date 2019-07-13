@@ -1,0 +1,356 @@
+---
+title: "class_1_predictive_models"
+output: html_document
+---
+
+# Predictive Model 2019-07-12
+
+## Basic Math
+
+```{r}
+2+2
+7*8
+exp(1)
+2^2
+```
+
+## Getting Help and commeting code
+
+```{r}
+#?log
+```
+
+## Assignement
+
+```{r}
+x <- 2 + 2
+y <- x^2 + 4
+```
+
+## Clearing Workspace
+
+```{r}
+ls()
+rm(list = ls())
+```
+
+## Vectors
+
+```{r}
+z <- c(1,3,4,5)
+z + 1
+```
+
+```{r}
+z[2:3]
+```
+
+```{r}
+x <- 1:10
+y <- 2*x +10
+```
+
+## Plotting
+
+```{r}
+plot(x,y)
+```
+
+### The seq operator
+
+```{r}
+seq(1,10,1)
+```
+
+```{r}
+conta <- 1:100
+for (i in conta) {
+  conta[i] <- conta[i] +1
+}
+conta
+```
+
+# Inference vs prediction
+
+## Example of a linear model
+
+y = -80 + 9.7 * X
+
+```{r}
+X <- 10
+y_hat <- -80 + 9.7* X
+y_hat
+```
+
+## Error functions
+
+```{r}
+y <- 15
+error <- y - y_hat
+error
+
+MASE <- error^2
+MASE
+
+MAPE <-  abs(error)
+MAPE
+```
+When doing models we want to minimize our EQM function
+
+$$ 
+EQM = bias(x)^2 + var(x)
+$$
+
+$$
+\hat\psi(x) = Best Calculated EQM
+$$
+
+## Distributions
+
+### Setting Seed
+
+```{r}
+set.seed(123)
+```
+
+### Uniform Distribution
+```{r}
+x <- runif(n = 30,min = 8,max = 18)
+x
+```
+
+### Functional programming
+
+```{r}
+library(magrittr)
+x %>% sort()
+```
+
+```{r}
+y <- 45 * tanh(x/1.9 - 7) + 57 + rnorm(30,mean = 0,sd = 4)
+```
+
+```{r}
+library(ggplot2)
+library(dplyr)
+```
+
+```{r}
+df <- tibble(x,y)
+```
+
+```{r}
+curve(45 * tanh(x/1.9 - 7) + 57,from = 8,to = 18,lwd = 2)
+points(x,y,col = "blue",pch = 19)
+```
+
+```{r}
+tahn1  = function(x){
+  45 * tanh(x/1.9 - 7) + 57
+}
+```
+
+
+```{r}
+ggplot(df) +
+  aes(x,y) +
+  geom_point() +
+  stat_function(fun = tahn1,size =1,color = "blue") +
+  geom_line(data = data.frame(spline(x,y,2)),color = "red") +
+  xlim(8,18)
+```
+
+## Simple Model
+
+### Fit and plot
+
+```{r}
+set.seed(123)
+
+x <- runif(n = 30,min = 8,max = 18) %>% sort()
+y <- 45 * tanh(x/1.9 - 7) + 57 + rnorm(30,mean = 0,sd = 4)
+
+y_hat <- numeric()
+
+curve(45 * tanh(x/1.9 - 7) + 57,from = 8,to = 18,lwd = 2)
+
+for(i in 1:500){
+  x_sim <- runif(n = 30,min = 8,max = 18) %>% sort()
+  y_sim <- tahn1(x_sim)+ rnorm(30,mean = 0,sd = 4)
+  
+  y_hat[i] <- mean(y_sim)
+  abline(h = y_hat[i],col = "grey", lwd = 2)
+  abline(h = y_hat %>% mean(),col = "red",lwd = 2)
+  
+}
+```
+
+
+### Bias and variance against fixed point
+
+```{r}
+(bias_11 <- y_hat %>% mean() - tahn1(11))
+(bias_15 <- y_hat %>% mean() - tahn1(15))
+(variance_15 <- variance_11  <- y_hat %>% var())
+(EQM_11 <- bias_11 ^ 2 + variance_11)
+(EQM_15 <- bias_15 ^ 2 + variance_15)
+```
+
+
+## A more flexible model, spline 2
+
+### Fit and plot
+
+```{r}
+set.seed(123)
+
+x <- runif(n = 30,min = 8,max = 18) %>% sort()
+y <- 45 * tanh(x/1.9 - 7) + 57 + rnorm(30,mean = 0,sd = 4)
+
+y_hat15 <- y_hat11 <- y_hat <- numeric()
+
+curve(45 * tanh(x/1.9 - 7) + 57,from = 8,to = 18,lwd = 2)
+
+for(i in 1:500){
+  x_sim <- runif(n = 30,min = 8,max = 18) %>% sort()
+  y_sim <- tahn1(x_sim)+ rnorm(30,mean = 0,sd = 4)
+  
+  fit <- smooth.spline(x_sim,y_sim,df = 2)
+  lines(predict(fit,seq(8,18,0.5)),col = "grey",lwd = 2)
+  
+  y_hat11[i] <- predict(fit,x =11)$y
+  y_hat15[i] <- predict(fit,x =15)$y
+}
+  points(11, mean(y_hat11), pch = 18, col = "red")
+  points(15, mean(y_hat15), pch = 18, col = "red")
+
+```
+
+### Bias and Variance
+
+```{r}
+(bias_11 <- (y_hat11 %>% mean() - tahn1(11)) %>% `^`(2))
+(bias_15 <- (y_hat15 %>% mean() - tahn1(15)) %>% `^`(2))
+(variance_11  <- y_hat11 %>% var())
+(variance_15 <- y_hat15 %>% var())
+(EQM_11 <- bias_11 + variance_11)
+(EQM_15 <- bias_15 + variance_15)
+```
+
+## A even more flexible model spline = 7
+
+### Fit and plot
+
+```{r}
+set.seed(123)
+
+x <- runif(n = 30,min = 8,max = 18) %>% sort()
+y <- 45 * tanh(x/1.9 - 7) + 57 + rnorm(30,mean = 0,sd = 4)
+
+y_hat15 <- y_hat11 <- y_hat <- numeric()
+
+curve(45 * tanh(x/1.9 - 7) + 57,from = 8,to = 18,lwd = 2,col = "black")
+
+for(i in 1:500){
+  x_sim <- runif(n = 30,min = 8,max = 18) %>% sort()
+  y_sim <- tahn1(x_sim)+ rnorm(30,mean = 0,sd = 4)
+  
+  fit <- smooth.spline(x_sim,y_sim,df = 7)
+  lines(predict(fit,seq(8,18,0.5)),col = "grey",lwd = 2)
+  
+  y_hat11[i] <- predict(fit,x =11)$y
+  y_hat15[i] <- predict(fit,x =15)$y
+}
+  points(11, mean(y_hat11), pch = 18, col = "red")
+  points(15, mean(y_hat15), pch = 18, col = "red")
+```
+
+### Bias and Variance
+
+```{r}
+(bias_11 <- (y_hat11 %>% mean() - tahn1(11)) %>% `^`(2))
+(bias_15 <- (y_hat15 %>% mean() - tahn1(15)) %>% `^`(2))
+(variance_11  <- y_hat11 %>% var())
+(variance_15 <- y_hat15 %>% var())
+(EQM_11 <- bias_11 + variance_11)
+(EQM_15 <- bias_15 + variance_15)
+```
+
+
+## An even too flexible model spline = 20
+
+### Fit and plot
+
+```{r}
+set.seed(123)
+
+x <- runif(n = 30,min = 8,max = 18) %>% sort()
+y <- 45 * tanh(x/1.9 - 7) + 57 + rnorm(30,mean = 0,sd = 4)
+
+y_hat15 <- y_hat11 <- y_hat <- numeric()
+
+curve(45 * tanh(x/1.9 - 7) + 57,from = 8,to = 18,lwd = 2,col = "black")
+
+for(i in 1:500){
+  x_sim <- runif(n = 30,min = 8,max = 18) %>% sort()
+  y_sim <- tahn1(x_sim)+ rnorm(30,mean = 0,sd = 4)
+  
+  fit <- smooth.spline(x_sim,y_sim,df = 20)
+  lines(predict(fit,seq(8,18,0.5)),col = "grey",lwd = 2)
+  
+  y_hat11[i] <- predict(fit,x =11)$y
+  y_hat15[i] <- predict(fit,x =15)$y
+}
+  points(11, mean(y_hat11), pch = 18, col = "red")
+  points(15, mean(y_hat15), pch = 18, col = "red")
+```
+
+### Bias and Variance
+
+```{r}
+(bias_11 <- (y_hat11 %>% mean() - tahn1(11)) %>% `^`(2))
+(bias_15 <- (y_hat15 %>% mean() - tahn1(15)) %>% `^`(2))
+(variance_11  <- y_hat11 %>% var())
+(variance_15 <- y_hat15 %>% var())
+(EQM_11 <- bias_11 + variance_11)
+(EQM_15 <- bias_15 + variance_15)
+```
+
+## An even way too flexible model spline = 29
+
+### Fit and plot
+
+```{r}
+set.seed(123)
+
+x <- runif(n = 30,min = 8,max = 18) %>% sort()
+y <- 45 * tanh(x/1.9 - 7) + 57 + rnorm(30,mean = 0,sd = 4)
+
+y_hat15 <- y_hat11 <- y_hat <- numeric()
+
+curve((45 * tanh(x/1.9 - 7) + 57),from = 8,to = 18,lwd = 2,col = "black")
+
+for(i in 1:500){
+  x_sim <- runif(n = 30,min = 8,max = 18) %>% sort()
+  y_sim <- tahn1(x_sim)+ rnorm(30,mean = 0,sd = 4)
+  
+  fit <- smooth.spline(x_sim,y_sim,df = 29)
+  lines(predict(fit,seq(8,18,0.5)),col = "grey",lwd = 2)
+  
+  y_hat11[i] <- predict(fit,x =11)$y
+  y_hat15[i] <- predict(fit,x =15)$y
+}
+  points(11, mean(y_hat11), pch = 18, col = "red")
+  points(15, mean(y_hat15), pch = 18, col = "red")
+```
+
+### Bias and Variance
+
+```{r}
+(bias_11 <- (y_hat11 %>% mean() - tahn1(11)) %>% `^`(2))
+(bias_15 <- (y_hat15 %>% mean() - tahn1(15)) %>% `^`(2))
+(variance_11  <- y_hat11 %>% var())
+(variance_15 <- y_hat15 %>% var())
+(EQM_11 <- bias_11 + variance_11)
+(EQM_15 <- bias_15 + variance_15)
+```
