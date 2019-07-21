@@ -1,0 +1,134 @@
+---
+title: "Class 2 Part 2 Predictive Modeles"
+author: "Bruno Carlin"
+date: "7/20/2019"
+output: html_document
+---
+
+
+```{r}
+library(tidyverse)
+library(tidymodels)
+```
+
+# KNN Base
+
+```{r}
+library(FNN)
+```
+
+## Varibles
+```{r}
+set.seed(123)
+n_sample <- 200
+k <- 1:5
+n_neighbor <- 1:70
+```
+
+# Series 
+
+```{r}
+x <- runif(n = n_sample, min = 8, max = 18) %>%
+  sort()
+y <- 45 * tanh(x/ 1.9 - 7) + 57 + rnorm(n = n_sample,mean = 0, sd = 4)
+```
+
+Neighbor 
+```{r}
+indexes <- rep(k,lengh.out = length(x))
+random_indexes <- sample(indexes)
+df <- cbind(x,y,random_indexes) %>% as.matrix() 
+```
+
+```{r}
+fold_mean <- numeric()
+test_mean <- numeric()
+
+for (k in 3:70) {
+  for (i in 1:5) {
+    train <- matrix(df[df[, 3] != i,][, 1])
+    test <- matrix(df[df[, 3] == i,][, 1])
+    y <- matrix(df[df[, 3] != i,][, 2])
+    y_test <- matrix(df[df[, 3] == i,][, 2])
+    
+  fit <- knn.reg(
+    train = train,
+    test  = test,
+    y     = y,
+    k     = k
+  )
+  fold_mean[i] <- (y_test - fit$pred) ^ 2 %>% mean()
+  }
+  test_mean[k] <- mean(fold_mean)
+}
+```
+
+```{r}
+plot(test_mean)
+```
+
+```{r}
+fit_obj <- parsnip::nearest_neighbor(mode = "regression",
+                          neighbors = 3)
+```
+
+
+# Fitting an classification model
+
+```{r}
+df <- read.table('data/german.data')
+```
+
+```{r}
+library(readr)
+german <- read_table2("data/german.data", 
+    col_names = FALSE)
+```
+
+```{r}
+library(tidyverse)
+library(forcats)
+```
+
+```{r}
+german_df <- german %>% 
+  mutate(X21 = as_factor(X21) %>% fct_recode(Good = "1",Bad = "2"))
+```
+
+```{r}
+df_split <- rsample::initial_split(german_df,prop = 0.8)
+testing <- df_split %>% testing()
+training <- df_split %>% training()
+```
+
+```{r}
+fit <- glm(X21 ~., data = training,family = "binomial")
+```
+
+```{r}
+prob <- predict(fit,testing,type = "response")
+```
+
+```{r}
+cutoff <- seq(0,1,0.05)
+resultados <- data.frame(cut = cutoff,ERROR = NA,TP = NA,FP = NA)
+for(i in 1:length(cutoff)){
+classification <- if_else(prob >= cutoff[i], "Bad","Good") %>%
+  as_factor()
+
+ERROR <- mean(testing$X21 == classification)
+
+TP <- sum(classification == "Bad" & testing$X21 == "Bad")/sum(testing$X21 == "Bad")
+
+FP <- sum(classification == "Bad" & testing$X21 == "Good")/sum(testing$X21 == "Good")
+
+resultados$ERROR[i] <- ERROR
+resultados$TP[i] <- TP
+resultados$FP[i] <- FP
+}
+```
+
+```{r}
+
+```
+

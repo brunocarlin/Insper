@@ -1,0 +1,350 @@
+---
+jupyter:
+  jupytext:
+    formats: ipynb,Rmd
+    text_representation:
+      extension: .Rmd
+      format_name: rmarkdown
+      format_version: '1.1'
+      jupytext_version: 1.1.7
+  kernelspec:
+    display_name: Python 3
+    language: python
+    name: python3
+---
+
+<img src="./Insper-positivo.png" width="200" height="200"/>
+
+
+
+
+# Computação para Ciência dos Dados
+ 
+## Exercícios - Laboratório 1
+ 
+
+
+### Nível I - Básico
+
+
+**1. Escreva uma função recursiva que recebe um número inteiro N e devolve o fatorial deste número.**
+
+```{python}
+def factorial( n ):
+       if (n <1):
+           return (1)
+       else:
+           f = n * factorial( n - 1 )  # recursive call
+           return (f)
+```
+
+```{python}
+factorial(5)
+```
+
+**2. Escreva uma função que determina se um número é ímpar e depois, fazendo uso da função map aplique-a para a seguinte lista: [2, 3, 5, 7, 12, 15, 20]**
+
+> atenção: A função map por padrão retorna um objeto. Você pode ver seu resultado fazendo-se uso de funções como list(). 
+>> Dica: execute `help(map)` para compreender como esta função funciona.
+
+```{python}
+def impar(n):
+    if n % 2 == 0:
+        return("par")
+    else:
+        return("impar")
+        
+```
+
+```{python}
+listan = [2, 3, 5, 7, 12, 15, 20]
+```
+
+```{python}
+x =map(impar,listan)
+```
+
+```{python}
+list(x)
+```
+
+<!-- #region -->
+**3. A distância entre dois pontos na superfície da Terra (em Km) pode ser aproximada fazendo-se uso do cálculo abaixo, onde 6371,01 é o raio médio da terra em Km.**
+
+$dist = 6371,01 \times arccos(sen(t_1) \times sen(t_2) + cos(t_1) \times cos(t_2) \times cos(g_1 - g_2))$
+
+onde $t_1, g_1$ e $t_2, g_2$ são pares de latitude e longitude de dois pontos de interesse. 
+
+**Faça um programa que receba dois pontos $(t_1, g_1), (t_2, g_2)$ e devolva a distância aproximada entre estes dois pontos em Km.**
+
+> Dicas:
+> em Python as funções trigonométricas estão disponíveis na biblioteca Math. O arco cosseno é obtido por meio da função acos. Seno pela função sin e Cosseno pela função cos.
+
+> Atente-se ao fato de que estas funções trigonométricas trabalham em Radianos e você estará informado os valores em grau. Para converter-los para radianos faça uso da função Radians da biblioteca Math.  
+
+
+
+> Para obter pontos de interesse, acesse o site https://www.latlong.net/
+
+> Para verificar se o seu programa está correto, você pode calcular a distância entre dois pontos no endereço eletrônico: https://www.geodatasource.com/distance-calculator
+
+> Exemplos de pontos para testes:
+>> Brasília (-15.699244, -47.829556)
+>> Tókio (35.652832, 139.879478)
+>> Distância aproximada em Km entre Brasília e Tókio: 17669.24 Km. 
+<!-- #endregion -->
+
+```{python}
+import math 
+```
+
+```{python}
+ponto1 = (2,3)
+ponto2 = (1,4)
+
+def get_ts(tupple1,tupple2):
+    t1 = tupple1[0]
+    g1 = tupple1[1]
+    t2 = tupple2[0]
+    g2 = tupple2[1]
+    return list(map(math.radians,[t1,g1,t2,g2]))
+```
+
+```{python}
+list(map(math.radians,get_ts(Brasília,Tókio)))
+```
+
+```{python}
+def distance_calculator(tupple1,tupple2):
+    t1,g1,t2,g2 = get_ts(tupple1,tupple2)
+    dist = 6371.01 * math.acos(math.sin(t1) * math.sin(t2) + math.cos(t1) * math.cos(t2) * math.cos(g1-g2))
+    return dist
+```
+
+```{python}
+Brasília = (-15.699244, -47.829556)
+Tókio = (35.652832, 139.879478)
+
+x = distance_calculator(Brasília,Tókio)
+```
+
+```{python}
+round(x,2)
+```
+
+```{python}
+import folium
+```
+
+```{python}
+mapa = folium.Map(zoom_start = 1.5)
+```
+
+```{python}
+mapa
+```
+
+**4. Crie as seguintes variáveis:**
+
+Peso = 85.94
+
+Altura = 1.73
+
+Na sequência, calcule o IMC ($ IMC = Peso / Altura^2 $) e exiba uma String com a seguinte formatação: "Para um peso de 85.9 Kg, e uma altura de 1.7 m, o IMC calculado é  de 28.71
+
+> Dica: você pode fazer uso da função format do Python!
+
+```{python}
+Peso  = 85.94
+Altura = 1.73
+
+def imc(peso,altura):
+    imc = peso/altura **2
+    print(f'Para um peso de {peso} e uma altura de {altura}, o IMC calculado é  de {imc:4.2f}')
+```
+
+```{python}
+imc(Peso,Altura)
+```
+
+### Nível II - Intermediário
+
+
+**5. Crie funções para calcular o valor máximo, mínimo, médio, soma e variância de uma dada lista de inteiros ou números reais utilizando as funções map, for e while. As funções devem funcionar para listas de qualquer dimensão.**
+
+```{python}
+import random
+
+#Listas para testes
+lista1 = random.sample(range(1000), 1000)
+lista2 = [random.gauss(.2, 100) for _ in range(100000)]
+lista3 = [random.gauss(.5,1000) for _ in range(1000000)]
+lista4 = [random.choice([1,2,2,3,3,3,4,4,4,4,5,5,5,5,5,5,5,5,5,5]) for _ in range(1000000)]
+
+```
+
+```{python}
+def minimo(lista):
+    lista.sort()
+    return lista[0]
+```
+
+```{python}
+def maximo(lista):
+    lista.sort()
+    return lista[-1]
+```
+
+```{python}
+def soma(lista):
+    total = 0
+    for i in lista:
+        total += i
+    return total
+```
+
+```{python}
+def media(lista):
+    return soma(lista)/len(lista)
+```
+
+```{python}
+def variancia(lista):
+    media_lista = media(lista)
+    desvio_tot = 0
+    for i in lista:
+        desvio = (i - media_lista) ** 2
+        desvio_tot += desvio
+    return desvio_tot/len(lista)
+```
+
+```{python}
+variancia([1,3,5,7])
+```
+
+**6. Escreva uma função para determinar se um número é primo**
+
+```{python}
+def primo(n):
+    divisores = 0
+    for i in range(n):
+        if n % (i +1) == 0:
+            divisores += 1
+    if divisores >= 3:
+        return 'Nope'
+    else:
+        return 'Primo'
+```
+
+```{python}
+primo(325235)
+```
+
+<!-- #region -->
+**7. Faça uma função que gera uma senha aleatória entre 7 e 10 caracteres da tabela ASCII**.
+
+>Conheça a tabela ASCII: https://pt.wikipedia.org/wiki/ASCII
+
+
+> Observe que os sinais gráficos começam no código decimal 32 (espaço) e terminam em 126
+ 
+ 
+> Você pode fazer uso da função chr que devolve o caracter ASCII a partir de um valor decimal.
+
+<!-- #endregion -->
+
+```{python}
+from random import randint
+SHORTEST = 7
+LONGEST = 10
+MIN_ASCII = 33
+MAX_ASCII = 127
+
+def random_password():
+    length_ = randint(SHORTEST,LONGEST)
+    result = ""
+    for i in range(length_):
+        random_char = chr(randint(MIN_ASCII,MAX_ASCII))
+        result = result + random_char
+    print(result)
+```
+
+```{python}
+random_password()
+```
+
+### Nível III - Avançado
+
+
+**8. Escreva uma função que recebe uma lista com N elementos e fazendo-se uso do conceito de intervalo interquartil (IQR) remove os outliers da lista.**
+> Dica: Faça uso da função percentile do Numpy!
+
+```{python}
+from numpy import percentile
+percentile([1,3,45,5234,532],20)
+def outliers_IQR(lista):
+    Q1 = percentile(lista,25)
+    Q3 = percentile(lista,75)
+    IQR = Q3 - Q1
+    UIQR = Q3 + 1.5 * IQR
+    DIQR = Q1 - 1.5 * IQR
+    new_list = []
+    for i in lista:
+        if ((i > DIQR) and (i < UIQR)):
+            new_list.append(i)
+    return new_list,DIQR,UIQR
+```
+
+```{python}
+outliers_IQR([1,3,10000,100000000000000])
+```
+
+**9. O código abaixo lê cada linha de um arquivo texto. Com base nesse código, crie funções para obter as seguintes informações:**
+
+1. A média da capacidade de ataque dos Pokémons legendários é superior aos demais? Quanto?
+2. Quais são os 10 Pokemons com capacidade de defesa e ataque mais interessante?
+3. Mostre algum fato interessante sobre os Pokemons que você consegue analisar com Python sobre este conjunto de dados.
+
+```{python}
+import csv
+
+with open('data/Pokemon.csv', encoding='utf8') as f:
+    reader = csv.DictReader(f, skipinitialspace=True)
+    pokemons = [line for line in reader]
+
+print(dict(pokemons[0]))
+print(dict(pokemons[-1]))
+```
+
+```{python}
+import pandas as pd
+```
+
+```{python}
+df = pd.read_csv('data/Pokemon.csv')
+```
+
+```{python}
+df.head()
+```
+
+```{python}
+df.groupby('Legendary').mean()
+```
+
+```{python}
+df['total_stats'] = df['Attack'] + df['Defense']
+df.sort_values(by = 'total_stats',ascending = False).head(10)
+```
+
+```{python}
+df.sort_values(by = 'Total',ascending = False).head(10)
+```
+
+```{python}
+df.groupby("Type 1").mean().sort_values('total_stats',ascending = False).
+```
+
+```{python}
+
+```

@@ -1,0 +1,30 @@
+#TOTAL DE INSCRITOS NO SISU 2015
+#(até 18h de quinta-feira, dia 22/01)
+UF Candidato	Número de inscritos
+Acre	25.224
+Alagoas	62.550
+Amapá	18.597
+Amazonas	56.947
+Bahia	196.967
+Ceará	173.291
+Distrito Federal	50.574
+Espírito Santo	36.719
+Goiás	77.734
+Maranhão	99.818
+Mato Grosso	52.628
+Mato Grosso do Sul	42.628
+Minas Gerais	310.847
+Pará	127.155
+Paraíba	101.880
+Paraná	106.210
+Pernambuco	169.784
+Piauí	82.273
+Rio de Janeiro	238.132
+RIo Grande do Norte	84.588
+Rio Grande do Sul	120.195
+Rondônia	18.934
+Roraima	8.105
+Santa Catarina	31.572
+São Paulo	291.789
+Sergipe	46.331
+Tocantins	20.210 

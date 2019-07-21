@@ -1,0 +1,494 @@
+---
+jupyter:
+  jupytext:
+    formats: ipynb,Rmd
+    text_representation:
+      extension: .Rmd
+      format_name: rmarkdown
+      format_version: '1.1'
+      jupytext_version: 1.1.7
+  kernelspec:
+    display_name: Python 3
+    language: python
+    name: python3
+---
+
+<img src="img/insper-banner.png" alt="Insper" style="float: right; display:inline; transform:scale(0.5);">
+
+### 1.8 Loop (Iteração)
+
+Loop ou laços são blocos de repetição, que executam um bloco de código determinadas vezes, sobre uma lista (dados) no caso do comando **For**.
+
+Referência:
+- [Capítulo 7: Iteração](https://penseallen.github.io/PensePython2e/07-iteracao.html)
+- [Range](https://docs.python.org/3/tutorial/controlflow.html#the-range-function)
+- [For](https://docs.python.org/3/tutorial/controlflow.html#for-statements)
+
+```{python}
+lst1 = [-1, 0, 5, 20, -10, -5]
+soma_modulo = 0
+soma = 0
+
+for item in lst1:
+    #soma_modulo += abs(item)
+    soma_modulo = soma_modulo + abs(item)
+    #soma += item
+    soma = item + soma
+    print('\t' + str(item) + '\t' +str(soma_modulo) + '\t' + str(soma))
+
+    
+print('>> soma módulo: ' + str(soma_modulo))
+print('>> soma: ' + str(soma))
+```
+
+```{python}
+print('\n\n\nM\'c\tZezinho')
+```
+
+```{python}
+
+```
+
+```{python}
+range(500000000000)
+```
+
+```{python}
+list(range(5))
+```
+
+```{python}
+for i in range(10):
+    print(i)
+```
+
+```{python}
+lst2=["a","b","c","e"]
+
+for cara in lst2:
+    print(cara * 7)
+```
+
+```{python}
+var1 = 10
+var2 = 10
+```
+
+```{python}
+var1 = var1 + 10
+print(var1)
+```
+
+```{python}
+var2 += 10
+print(var2)
+```
+
+```{python}
+def primeiro(lst):
+    return lst[0]
+
+def último(lst):
+    return lst[-1]
+```
+
+```{python}
+dt1 = [1, 20, 30, 400]
+
+primeiro(dt1)
+```
+
+```{python}
+último(dt1)
+```
+
+```{python}
+dt2="Nada a declarar!"
+```
+
+```{python}
+último(dt2)
+```
+
+```{python}
+primeiro(dt2)
+```
+
+```{python}
+for i in dt2:
+    print('\t' + i)
+```
+
+### 1.9 IF (Se, tomada de decisão)
+
+O comando IF permite a mudança do fluxo do programa face a uma tomada de decisão lógica (expressões booleanas) True ou False (Verdadeiro ou False respectivamente)
+
+Referência:
+- [IF](https://docs.python.org/3/tutorial/controlflow.html#if-statements)
+- [Capítulo 5: Condicionais e recursividade](https://penseallen.github.io/PensePython2e/05-cond-recur.html)
+
+É importante lembrar que *=* é atribuição e *==* é comparação! Isso causa confusão na maioria das liguagens de programação!!! :-) Atenção!
+
+```{python}
+1==1
+```
+
+```{python}
+True == False
+```
+
+```{python}
+False != False
+```
+
+```{python}
+not False != False
+```
+
+```{python}
+1 == "1"
+```
+
+```{python}
+5 < 10
+```
+
+```{python}
+13.4 > 13
+```
+
+```{python}
+1=1
+```
+
+```{python}
+if 10 > 2:
+    print('Yes!!')
+```
+
+```{python}
+if 10 > 100:
+    print('yes')
+else:
+    print('nooo!')
+```
+
+```{python}
+def check_value(val):
+    if val == 0:
+        return 'ZERO!'
+    elif val > 0:
+        return 'MAIOR!'
+    else:
+        return 'MENOR!'
+```
+
+```{python}
+check_value(0)
+```
+
+Note que devemos utilizar **:** após os comandos if, else, elif, while, for, def, entre outros...
+
+Isso é também uma fonte de confusão para iniciantes na linguagem, sempre preste atenção nas mensagens de erro, elas sempre indicam onde está o problema...
+
+```{python}
+a = -1
+b = 10
+c = 300
+
+if a < 0 and not b > 300:
+    print('algebra booleana é coisa de loco!')
+```
+
+```{python}
+if (a < 0) and (not (b > 300) and (c < 5)):
+    print('algebra booleana é coisa de loco!')
+```
+
+Operadores lógicos:
+
+- == (igual)
+- != (diferente)
+- and (e)
+- or (ou)
+- not (não, negação)
+- \>= (maior igual)
+- <= (menor igual)
+- < (menor)
+- \> (maior)
+
+Para saber mais: 
+- [Conditionals](http://openbookproject.net/thinkcs/python/english3e/conditionals.html)
+- [Python Boolean Logic: Not As Scary As It Sounds](https://thehelloworldprogram.com/python/python-boolean-logic-not-as-scary-as-it-sounds/)
+
+
+```{python}
+10 < 5 or not 10 < 5
+```
+
+```{python}
+ser = True
+
+ser or not ser
+```
+
+```{python}
+5 % 2 == 0
+```
+
+```{python}
+type(ser)
+```
+
+#### While Loop
+
+Outra forma de realizar repetições é utilizando a função *while*, que executa um bloco de código enquanto uma operação for verdadeira.
+
+Referência:
+
+- [7.3 - Instrução while](https://penseallen.github.io/PensePython2e/07-iteracao.html)
+- [8.2. The while statement](https://docs.python.org/3/reference/compound_stmts.html#while)
+
+```{python}
+def somador(final):
+    interador = 0
+    acumulado = 0
+    
+    while interador <= final: #loop
+        acumulado += interador
+        interador += 1
+    
+    return acumulado
+```
+
+```{python}
+somador(100)
+```
+
+```{python}
+x = 0
+
+while True: #loop infinito
+    x += 1
+    if (x > 100):
+        break
+
+print(x)
+```
+
+```{python}
+while True:
+    val = int(input("Informe o valor: "))
+    if val == 0:
+        break
+    else:
+        print(val**val)
+```
+
+Note que a diferença básica entre **for** e **while**:
+    
+**for** é utilizado para interação em estruturas de dados com listas, arrays, vetores, dicionários, arquivos, strings, tuplas, etc...
+
+E o **while** executa um bloco de código conforme uma determinada regra (operação) é verdadeira (True)
+
+
+### 1.10 Biblioteca Padrão
+
+Python 3 conta com diversas bibliotecas de programas tal como a math, random, entre outras. Para importar uma biblioteca utilizamos o comando **import**
+
+É necessário importar as bibliotecas no início do programa, para organização.
+
+Para utilizar as funções de uma biblioteca externa, basta incluir o nome da biblioteca bem como o nome da função separados por ponto **.**
+
+Referência:
+[The Python Standard Library](https://docs.python.org/3/library/index.html)
+
+
+[Mathematical functions](https://docs.python.org/3/library/math.html)
+
+```{python}
+import math
+```
+
+```{python}
+math.cos(math.radians(45))
+```
+
+```{python}
+math.degrees(math.cos(math.radians(45)))
+```
+
+[Generate pseudo-random numbers](https://docs.python.org/3/library/random.html)
+
+```{python}
+import random
+```
+
+```{python}
+random.random()
+```
+
+```{python}
+random.randint(0,10)
+```
+
+```{python}
+random.choice(["A","B","C","D","E","F"])
+```
+
+```{python}
+random.choice('Anda com fé eu vou Que a fé não costuma faiá')
+```
+
+```{python}
+RAND_LIST=[]
+for i in range(100):
+    RAND_LIST.append(random.randint(0,1000))
+```
+
+```{python}
+a = 256
+b = 256
+```
+
+```{python}
+id(a)
+```
+
+```{python}
+id(b)
+```
+
+```{python}
+a is b
+```
+
+```{python}
+print(RAND_LIST)
+```
+
+```{python}
+max(RAND_LIST)
+```
+
+```{python}
+min(RAND_LIST)
+```
+
+```{python}
+math.pi
+```
+
+```{python}
+math.e
+```
+
+```{python}
+def getE(e):
+    return (1 + 1/e) ** e
+```
+
+```{python}
+getE(999999999)
+```
+
+```{python}
+math.cos(math.radians(random.randint(1, 360)))
+```
+
+```{python}
+math.log(10) #log na base E
+```
+
+```{python}
+math.exp(math.log(10))
+```
+
+```{python}
+23 ** 3
+```
+
+```{python}
+math.exp(3 * math.log(23))
+```
+
+```{python}
+pow(23, 3)
+```
+
+```{python}
+23 ** 3
+```
+
+```{python}
+math.sqrt(12167)
+```
+
+```{python}
+math.sqrt(23)
+```
+
+```{python}
+math.sqrt(23)*math.sqrt(23)
+```
+
+```{python}
+math.ceil(math.sqrt(23)*math.sqrt(23))
+```
+
+```{python}
+math.floor(math.sqrt(23)*math.sqrt(23))
+```
+
+```{python}
+math.radians(30)
+```
+
+```{python}
+math.degrees(math.radians(30))
+```
+
+```{python}
+round(math.degrees(math.radians(30)))
+```
+
+```{python}
+.1 + .2
+```
+
+```{python}
+math.ceil(.1 + .2)
+```
+
+```{python}
+math.floor(.1 + .2)
+```
+
+```{python}
+math.trunc(.1 + .2)
+```
+
+Referência:
+
+- [Floating Point Arithmetic: Issues and Limitations](https://docs.python.org/3.7/tutorial/floatingpoint.html)
+- [What Every Computer Scientist Should Know About Floating-Point Arithmetic](https://docs.oracle.com/cd/E19957-01/806-3568/ncg_goldberg.html)
+
+```{python}
+# !pwd
+```
+
+```{python}
+# !ls
+```
+
+```{python}
+
+```
+
+```{python}
+2 + 2
+```
+
+```{python}
+
+```

@@ -1,0 +1,681 @@
+---
+jupyter:
+  jupytext:
+    formats: ipynb,Rmd
+    text_representation:
+      extension: .Rmd
+      format_name: rmarkdown
+      format_version: '1.1'
+      jupytext_version: 1.1.7
+  kernelspec:
+    display_name: Python 3
+    language: python
+    name: python3
+---
+
+<img src="img/insper-banner.png" alt="Insper" style="float: right; display:inline; transform:scale(0.5);">
+
+# Programa Avançado em Data Science e Decisão
+
+## Aula 2 - Jupyter & Gráficos
+
+Geramos e utilizamos gráficos em todo o processo de análise e manipulação das informações, para alcançar *data quality*, estudar e entender padrões, entre outros. Visualização de dados não é só um fim para consolidação das informações, é algo que traz sentido para complexidade.
+
+
+### 2.1 Jupyter: Executar comandos do SO
+
+Para executar um comando externo do sisema operacional (SO) no ambiente Jupyter utilizamos **!**
+
+Podemos também carregar o texto de saída do comando do SO em uma variável, sendo que cada linha retornada é organizada em itens de uma lista.
+
+```{python}
+# !dir
+```
+
+```{python}
+# !date /T
+```
+
+```{python}
+dir_list = !dir
+```
+
+```{python}
+dir_list
+```
+
+```{python}
+dir_list[0].split()
+```
+
+Jupyter notebook é utilizado por cientistas de dados para facilitar a manipuação das informações, testes e experimentação, documentação, visualização, gráficos e "storytelling". Juntando tudo isso em um único ambiente (*put it all together*).
+
+Para saber mais assista os vídeos:
+
+- [Brian Granger: All About Jupyter](https://www.youtube.com/watch?v=GMKZD1Ohlzk)
+- [Fernando Perez: Project Jupyter: From interactive Python to open science](https://www.oreilly.com/ideas/project-jupyter-from-interactive-python-to-open-science?imm_mid=0f5ab4&cmp=em-prog-na-na-newsltr_20170826&utm_content=buffer65b71&utm_medium=social&utm_source=twitter.com&utm_campaign=buffer)
+
+E veja notebooks com análise de dados reais (não didáticos):
+
+- [TCGA Analysis Notebooks](https://github.com/theandygross/TCGA/tree/master/Analysis_Notebooks)
+- [Buzz Feed News Everything](https://github.com/BuzzFeedNews/everything)
+- [Analyzing GitHub, how developers change programming languages over time](https://blog.sourced.tech/post/language_migrations/)
+- [Lecture in Quantitative Economics](https://lectures.quantecon.org/py/)
+- [Python Data Science Handbook](https://github.com/jakevdp/PythonDataScienceHandbook)
+
+Dicas:
+
+- [Jupyter Notebook Tips Tricks Shortcuts](https://www.dataquest.io/blog/jupyter-notebook-tips-tricks-shortcuts/)
+- [Notebook Basics](http://jupyter-notebook.readthedocs.io/en/latest/examples/Notebook/Notebook%20Basics.html)
+
+
+Use o comando (tecla) "**H**" para acessar o help do Jupyter com as teclas de atalho, assim poderá alcançar maior produtividade.
+
+
+### 2.2 Importação de bibliotecas externas
+
+Além da rica coleção da [biblioteca padrão](https://docs.python.org/3/library/index.html) do Python 3, é possível importar bibliotecas externas de terceiros, feitas por equipes abertas (open source) ou por empresas particulares.
+
+Estas bibliotecas são mantidas no site: [PIP](https://pypi.python.org/pypi)
+
+A ferramenta que baixa e instala as biblotecas é chamado de PIP (Python Package Index).
+É necessário instalar o pacote (package) apenas uma vez em cada equipamento (computador) que estiver utilizando o seu programa.
+
+Referência:
+- [Modules](https://docs.python.org/3/tutorial/modules.html#packages)
+- [The import statement](https://docs.python.org/3.6/reference/simple_stmts.html#import)
+
+```{python}
+# !pip install matplotlib
+```
+
+### 2.3 Matplotlib, visualização de dados
+
+A biblioteca Matplotlib é extremamente poderosa e popular em projetos de análise de dados, utilizado por cientistas, administradores, estatístico, jornalistas e engenheiros.
+
+Referência:
+- [Matplotlib](https://matplotlib.org/users/pyplot_tutorial.html)
+
+```{python}
+import matplotlib.pyplot as plt
+```
+
+```{python}
+from matplotlib import pyplot as plt
+```
+
+```{python}
+lista1=[10,20,30,30,15,5]
+
+plt.plot(lista1)
+
+plt.ylabel('Meses')
+plt.xlabel('Valor')
+plt.title('Orçamento')
+
+plt.show()
+```
+
+```{python}
+lista2=[5,10,20,60,10,3]
+
+plt.plot(lista1)
+plt.plot(lista2)
+plt.show()
+```
+
+```{python}
+plt.xlabel('Tempo')
+plt.ylabel('Valores')
+plt.title('Valores no Tempo')
+
+plt.text(3.2, 60, 'pico')
+
+plt.axis([0, 6, 0, 70])
+
+plt.grid(True)
+
+plt.plot(lista1)
+plt.plot(lista2)
+plt.show()
+```
+
+### 3.3 Pontos
+
+Plotar pontos...
+
+```{python}
+import math
+
+x=[]
+y=[]
+
+for point in range(0, 365, 10):
+    x.append(math.sin(math.radians(point)))
+    y.append(math.cos(math.radians(point)))
+    
+# plt.plot(x, y, 'r')
+plt.plot(x, y, 'ro-')
+
+plt.show()
+```
+
+```{python}
+x
+```
+
+Como utilizar o código acima para organizar os pontos em uma espiral?
+
+```{python}
+x=[]
+y=[]
+
+raio = 0 #Variando o raio da circunferência.
+
+for point in range(0, 3000, 10):
+    x.append(math.sin(math.radians(point)) * raio)
+    y.append(math.cos(math.radians(point)) * raio)
+    raio += 10
+    
+plt.plot(x, y, 'b')
+
+plt.show()
+```
+
+Para controlar o estilo das linhas consulte o manual do **plot**:
+
+- [plot](https://matplotlib.org/api/pyplot_api.html#matplotlib.pyplot.plot)
+
+```{python}
+ax = list(range(1,10))
+bx = ax
+cx = ax
+
+by = [i ** 2 for i in ax]
+cy = [i ** 3 for i in ax]
+
+plt.plot(ax, ax, 'r--', bx, by, 'bs', cx, cy, 'g^')
+plt.show()
+```
+
+```{python}
+ax = list(range(0,10))
+bx = ax
+cx = ax
+
+by = [math.sin(i) for i in ax]
+cy = [math.cos(i) for i in ax]
+
+plt.plot(bx, by, 'bs', cx, cy, 'g^')
+plt.plot(ax, ax, 'r--',bx, by, 'bs', cx, cy, 'g^')
+
+plt.show()
+```
+
+```{python}
+datax = [0, 10, 20, 30, 40, 43, 50, 88]
+datay = [.15, .2, .40, .75, .90, 1.8, .9, 1.10]
+
+plt.plot(datax, 
+         datay, 
+         linestyle='--', 
+         color='red', 
+         marker='s', 
+         linewidth=3.0, 
+         markeredgecolor='b')
+
+#plt.axis([ -1, 90 , -2, 2 ])
+plt.show()
+```
+
+### 3.4 Gráficos de barras
+
+```{python}
+data_label = ['Python', 'C/C++', 'Java', 'C#', 'Swift', 'Delphi/Pascal']
+data_values_2016 = [7,9,8,4,3,1]
+
+y_pos = range(len(data_label))
+ 
+plt.bar(y_pos, data_values_2016, align='center', alpha=0.5)
+
+plt.xticks(y_pos, data_label)
+
+plt.ylabel('Uso')
+plt.xlabel('Linguagens')
+plt.title('Indice das Linguagens de Programação')
+ 
+plt.show()
+
+```
+
+```{python}
+data_label = ['Python', 'C/C++', 'Java', 'C#', 'Swift', 'Delphi/Pascal']
+data_values_2016 = [7,9,8,4,3,1]
+data_values_2015 = [6,8,9,4,3,1]
+
+y_pos = list(range(len(data_label)))
+bar_width = .25
+
+plt.bar(y_pos, 
+        data_values_2016, 
+        bar_width, 
+        align='center', 
+        alpha=0.5, 
+        label='2016', 
+        color='b')
+
+plt.bar([y+bar_width for y in y_pos], 
+        data_values_2015, 
+        bar_width,
+        align='center', 
+        alpha=0.5, 
+        label='2015', 
+        color='r')
+
+plt.xticks(y_pos, data_label)
+
+plt.ylabel('Uso')
+plt.xlabel('Linguagens')
+plt.title('Índice das Linguagens de Programação')
+plt.legend()
+
+plt.show()
+```
+
+### 3.5 Leitura de arquivo texto
+
+Como ler, utilizar o character set adequado e processar o texto...
+
+```{python}
+#Le arquivo e carrega os dados em uma variável
+#apenas para propósito didático, corre-se o risco de não haver memória suficiente para carregar os dados...
+#pode consumir toda a memória do computador/servidor
+
+arquivo = open("data\SISU.txt","r", encoding='utf-8') #abre arquivo em modo leitura, lazy function
+sisu = arquivo.read() #carrega os dados na variável (memória)
+arquivo.close() #fecha o arquivo
+```
+
+```{python}
+sisu
+```
+
+```{python}
+print('Marioa\n\tBonita\n\N{Commercial At}')
+```
+
+caracteres especiais, ESCAPE
+
+`\n` - enter (LF)
+
+`\t` - tab
+
+`\N{nome}` - Caracter [UNICODE](https://home.unicode.org/) específico, pelo nome
+
+Para saber mais:
+
+- [String and bytes literals](https://docs.python.org/3/reference/lexical_analysis.html#string-and-bytes-literals)
+- [The Absolute Minimum Every Software Developer Absolutely, Positively Must Know About Unicode and Character Sets (No Excuses!)](https://www.joelonsoftware.com/2003/10/08/the-absolute-minimum-every-software-developer-absolutely-positively-must-know-about-unicode-and-character-sets-no-excuses/)
+
+```{python}
+sisu
+```
+
+Usar parâmetro **encoding="utf-8"** para abrir arquivo usando padrão de caracteres [UNICODE](https://unicode-table.com/pt/)
+
+Para saber mais sobre carregamento e leitura de arquivos:
+- [Capítulo 14: Arquivos](https://penseallen.github.io/PensePython2e/14-arquivos.html)
+- [Reading and Writing Files](https://docs.python.org/3/tutorial/inputoutput.html#reading-and-writing-files)
+- [Unicode HOWTO](https://docs.python.org/3/howto/unicode.html)
+
+```{python}
+row_data=sisu.split('\n')[2:-2] #quebra o texto em uma lista onde houver o caracter enter (\n) e ignora linhas 1, 2 e última
+labels=row_data[0].split('\t') #pega apenas a primeira linha da lista e quebra o texto pelo caracter tab (\t)
+sisu_data=row_data[1:-1] #Ignora a 1a linha com o cabeçalho dos dados
+```
+
+```{python}
+sisu_data
+```
+
+```{python}
+sisu_uf=[]
+sisu_inscritos=[]
+
+for line in sisu_data:
+    uf, inscritos = line.split('\t')
+    inscritos = int(inscritos.replace('.',''))
+    sisu_uf.append(uf)
+    sisu_inscritos.append(inscritos)
+      
+```
+
+```{python}
+sisu_uf
+```
+
+```{python}
+float('23.3') + 100
+```
+
+```{python}
+print(sisu_uf)
+print(sisu_inscritos)
+```
+
+```{python}
+sum(sisu_inscritos)
+```
+
+```{python}
+len(sisu_inscritos)
+```
+
+```{python}
+sisu_data
+```
+
+Em Python é possível fazer atribuição para diversas variáveis simultaneamente.
+
+```{python}
+a, b = 10, 99
+
+a + b
+```
+
+```{python}
+#Não é uma boa prática! Didático!
+
+def operações(a, b):
+    return a + b, a * b, a - b, a / b, a // b
+
+operações(10, 30)
+```
+
+```{python}
+vSoma, vMulti, vMenos, vDiv, vResto = operações(20, 4)
+```
+
+```{python}
+vResto
+```
+
+Trocar o valor de variáveis (swap)
+
+```{python}
+v1 = 10
+v2 = -15
+v1, v2 = v2, v1
+```
+
+```{python}
+v1
+```
+
+### 3.6 Gráfico de PIZZA (PIE)
+
+
+```{python}
+títulos = ['A', 'B', 'O', 'AB']
+frações = [40, 10, 45, 5]
+destaque = (0, 0, .1, .5) 
+
+fig1, ax1 = plt.subplots()
+
+ax1.pie(frações, 
+        explode=destaque, 
+        labels=títulos, 
+        autopct='%1.1f%%',
+        shadow=True, 
+        startangle=90)
+
+ax1.axis('equal')  # Aspect ratio
+
+plt.title('Tipos sanguíneos')
+
+plt.show()
+```
+
+**Desafio:** Importar o arquivo "BlodyType.csv" e gerar gráficos para comparar a % dos diferentes tipos sanguíneos.
+
+```{python}
+destaque = [0] * len(sisu_inscritos)  # cria array de zeros nas dimensões de sisu_inscritos
+destaque[9] = .5 # destaca no gráfico o dado 10 da lista
+
+fig1, ax1 = plt.subplots()
+
+ax1.pie(sisu_inscritos, 
+        explode=destaque, 
+        labels=sisu_uf, 
+        shadow=True, 
+        startangle=90)
+
+ax1.axis('equal')
+
+plt.show()
+```
+
+### 3.6 Gráfico histograma
+
+O que é um [histograma](http://mathworld.wolfram.com/Histogram.html)??
+Consulto os estatísticos de plantão!!
+
+```{python}
+import random
+
+random_list=[]
+
+for val in range(1000):
+    random_list.append(random.randint(0, 1000))
+
+plt.hist(random_list)
+plt.show()
+```
+
+### 3.7 Gráfico Scatter
+
+Um gráfico com até 4 dimensões: **Scatter**
+- **x**, valor vertical
+- **y**, valor horizontal
+- **size**, tamanho
+- **color**, cor
+
+```{python}
+x = [0, 2, 4, 6, 8, 14, 10] # Valores horizontais
+y = [100, 300, 500, 700, 1110, 1300, 900] # Valores verticais
+size = [10, 50, 100, 300, 500, 1200, 500] # Tamanho
+color = [1, 1, 1, 3, 3, 5, 5] # Cores
+
+plt.scatter(x, y, s=size, c=color, alpha=.5) # alpha: transparência entre 0 e 1
+plt.show()
+```
+
+```{python}
+x = [0, 2, 4, 6, 8, 14, 10] # Valores horizontais
+y = [100, 300, 500, 700, 1110, 1300, 900] # Valores verticais
+
+plt.scatter(x, y, s=200)
+plt.show()
+```
+
+```{python}
+plt.scatter(1, 10, s=4000, c='r', alpha=.5)
+plt.scatter(2, 20, s=1000 ,c='b', alpha=.5)
+plt.scatter(3, 30, s=10, c='g', alpha=.5)
+plt.scatter(2, 22, s=10000, c='orange', alpha=.5)
+plt.show()
+```
+
+Como podemos organizar os dados do gráfico anterior em listas?
+
+
+### 3.8 Números em notação científica, *eval*, *exec* e *zip*
+
+
+Números em notação científica são representados com **E**
+
+$0.000023x10^2 = 2.3E-5$
+
+```{python}
+1.23123E+10
+```
+
+```{python}
+1.23123E-2
+```
+
+```{python}
+12.43e10
+```
+
+Função **eval** executa uma única expressão em um string (texto) com código Python
+
+Função **exec** executa um bloco de código Python em um string (texto)
+
+Para saber mais:
+
+- [eval](https://docs.python.org/3.6/library/functions.html#eval)
+- [exec](https://docs.python.org/3/library/functions.html#exec)
+
+> Com grandes poderes vem grandes responsabilidades - Ben Parker
+
+
+```{python}
+"Na " * 20 + "Batman!!"
+```
+
+```{python}
+eval('math.sqrt(23*453/1e-10)')
+```
+
+```{python}
+código = 'for value in range(10):\n    print("{0}**{0} = {1}".format(value, value**value))'
+
+exec(código)
+```
+
+Para saber mais sobre **format**:
+
+- [Input and output](https://docs.python.org/3.2/tutorial/inputoutput.html)
+
+
+Como acessar dados em arquivos compactados, com ZIP por exemplo??
+
+```{python}
+import zipfile
+
+compactado = zipfile.ZipFile('data/CountryData.zip', 'r')
+arquivo = compactado.open('CountryData.csv')
+
+for linha in arquivo:
+    print(linha)
+
+compactado.close()
+```
+
+Para saber mais sobre arquivos compactados (zip):
+
+- [Work with ZIP archives](https://docs.python.org/3.2/library/zipfile.html?highlight=zip#zipfile)
+
+
+### 3.9 Processar arquivo texto
+
+```{python}
+def string_para_número_v2(valor): # bug \r\n, num
+    if valor.isdigit() or \
+       valor.upper().find('E+') > 0 or \
+       valor.upper().find('E-') > 0:
+        return eval(valor)
+    else:
+        return valor
+
+# expressão regular
+import re
+
+padrão = re.compile('-?\ *[0-9]+\.?[0-9]*(?:[Ee]\ *-?\ *[0-9]+)?')
+    
+def string_para_número_v3(valor): #bug .12 .111
+    if len(re.findall(padrão, valor)) > 0:
+        return eval(valor)
+    else:
+        return valor
+        
+def string_para_número(valor):
+    try:
+        return eval(valor)
+    except:
+        return valor
+    
+def texto_para_lista(texto):
+    return list(map(string_para_número, texto.split(",")))
+```
+
+Testes...
+
+```{python}
+string_para_número_v3('232e2')
+```
+
+```{python}
+re.findall(padrão, '73E-2')
+```
+
+```{python}
+try:
+    x = 10/0
+except:
+    print('ops!')
+```
+
+```{python}
+10/0
+```
+
+```{python}
+lst10=[5,10,0,2,-5]
+
+for value in lst10:
+    try: 
+        print(99/value)
+    except:
+        print('OPS! DIV by ZERO!')
+```
+
+Para saber mais sobre *try* e *exception*:
+
+- [Errors and Exceptions](https://docs.python.org/3.6/tutorial/errors.html)
+
+
+```{python}
+texto_para_lista("A,1,10,22e+5,12E-5,,Maria Silva,12.")
+```
+
+```{python}
+import zipfile
+
+países=[]
+
+compactado = zipfile.ZipFile('data/CountryData.zip', 'r')
+arquivo = compactado.open('CountryData.csv')
+
+for linha in arquivo:
+    países.append(texto_para_lista(linha.decode("utf-8",'ignore')))
+
+compactado.close()
+```
+
+Para saber mais sobre UNICODE (UTF-8):
+    
+- [Unicode](https://docs.python.org/3/howto/unicode.html)
+- [Wikipedia Unicode](https://pt.wikipedia.org/wiki/Unicode)
+- [About Unicode and Character Sets](https://www.joelonsoftware.com/2003/10/08/the-absolute-minimum-every-software-developer-absolutely-positively-must-know-about-unicode-and-character-sets-no-excuses/)
+
+```{python}
+países[6]
+```
+
+**Desafio:** Utilizar os dados sobre os países e exibi-los em um gráfico **Scatter**
+
+Estudar outros diversos tipos de gráficos da biblioteca **matplotlib**
+
+- [Matplotlib overview](https://matplotlib.org/contents.html)
