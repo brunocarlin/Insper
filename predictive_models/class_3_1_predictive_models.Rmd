@@ -1,0 +1,54 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+```{r}
+library(ISLR)
+library(glmnet)
+```
+
+```{r}
+data("Credit")
+
+Credit
+
+```
+
+```{r}
+fit <- leaps::regsubsets(Balance ~.,
+                  data = Credit,
+                  method = "exhaustive",
+                  nvmax = 11)
+summ <- summary(fit)
+summ$adjr2
+```
+
+```{r}
+predict.regsubsets <- function(object, newdata, id, ...) {
+  form <- as.formula(object$call[[2]])
+  matrix1 <- model.matrix(form, newdata)
+  coefs <- coef(object, id = id)
+  
+  return(matrix1[ , names(coefs)] %*% coefs)
+}
+```
+
+```{r}
+new_data <- Credit %>% head(10)
+fit %>% predict(newdata = new_data,id = 5)
+```
+
+```{r}
+Credit1 <- Credit[,-1]
+```
+
+```{r}
+x <- model.matrix(Balance ~ .,data = Credit1)[,-1]
+y <- Credit1$Balance
+```
+
+```{r}
+
+```
+
