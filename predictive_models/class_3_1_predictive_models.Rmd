@@ -6,6 +6,7 @@ output: html_document
 ```{r}
 library(ISLR)
 library(glmnet)
+library(plotmo)
 ```
 
 ```{r}
@@ -44,11 +45,30 @@ Credit1 <- Credit[,-1]
 ```
 
 ```{r}
-x <- model.matrix(Balance ~ .,data = Credit1)[,-1]
+X <- model.matrix(Balance ~ .,data = Credit1)[,-1]
 y <- Credit1$Balance
 ```
 
 ```{r}
+tr <- sample(nrow(x),.8*nrow(x))
+```
 
+```{r}
+X <- scale(X,center = TRUE,scale = TRUE)
+```
+
+```{r}
+ridge <- glmnet(X[tr,],y[tr],
+                alpha = 0,
+                standardize = FALSE)
+```
+
+```{r}
+plot_glmnet(ridge)
+```
+
+```{r}
+parsnip::linear_reg(mode = "regression",penalty = 1,mixture = 0) %>% 
+  set_engine("glmet")
 ```
 

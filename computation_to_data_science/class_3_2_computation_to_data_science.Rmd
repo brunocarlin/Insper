@@ -1,0 +1,740 @@
+---
+jupyter:
+  jupytext:
+    formats: ipynb,Rmd
+    text_representation:
+      extension: .Rmd
+      format_name: rmarkdown
+      format_version: '1.1'
+      jupytext_version: 1.2.1
+  kernelspec:
+    display_name: Python 3
+    language: python
+    name: python3
+---
+
+<img src="img/insper-banner.png" alt="Insper" style="float: right; display:inline; transform:scale(0.5);">
+
+# Programa Avançado em Data Science e Decisão
+
+## Aula 4 - Processamento Numérico
+
+Em uma perspectiva, podemos resumir os computadores como simplesmente máquinas de calcular. Uma das grandes vantagens das máquinas é sua capacidade de processar grandes volumes de dados e realizar operações matemática rápidamente e sem erro.
+
+
+### 3.1 - Numpy
+
+Numpy é uma biblioteca para processamento numérico e computação científica, muito popular entre cientistas de dados, pesquisadores e engenheiros.
+
+Referência:
+- [CHAPTER 4 - NumPy Basics: Arrays and Vectorized Computation](http://shop.oreilly.com/product/0636920050896.do)
+- [Numpy Tutorial](https://docs.scipy.org/doc/numpy-dev/user/quickstart.html)
+- [Numpy](http://www.numpy.org/)
+
+> Assistir o documentário: "Prediction by the Numbers Prologue"
+
+É importante lembrar que vetores são listas e matrizes são listas de listas.
+O NumPy Array é como uma lista, porém tem comportamento matemático.
+
+> O comportamento para acesso aos elementos de listas, strings do Python 3 bem como NumPy Array são consistentes. Porém o array tem comportamento matemático
+
+```{python}
+import numpy as np
+```
+
+### 3.2 Conceitos básicos do *Numpy*
+
+
+Numpy contêm funções trigonométricas básicas...
+
+```{python}
+np.degrees(np.sin(np.radians(45)))
+```
+
+```{python}
+np.pi
+```
+
+Quanto utilizar a biblioteca **numpy** evite misturar com as funções da biblioteca **math**, adote as funções de uma das bibliotecas para garantir consistência
+
+
+**arange**, é analogo a função **range** do Python 3, só que mais poderoso...
+
+```{python}
+np.arange(10)
+```
+
+```{python}
+np.arange(0,1,.1)
+```
+
+**reshape** quera uma lista (vetor) e transforma em uma matriz. É possível encadear os comandos...
+
+```{python}
+matrix1 = np.arange(100).reshape(10,10)
+```
+
+```{python}
+matrix1
+```
+
+Para visualizar as dimensões da variável use **shape**
+
+```{python}
+matrix1.shape
+```
+
+Para somar...
+
+```{python}
+matrix1.sum()
+```
+
+```{python}
+sum(range(100))
+```
+
+Os elementos são acessados assim como em strings e listas, de forma consistente.
+
+Primeiro item da lista...
+
+> ...lembre-se que o primeiro elemento de uma lista ou string é sempre ZERO!!
+
+```{python}
+matrix1[0]
+```
+
+Acessar o elemento posição 5, 5 (x, y)
+
+```{python}
+matrix1[5, 1]
+```
+
+Acessar último elemento da lista...
+
+```{python}
+matrix1[-1, -1]
+```
+
+Converter para lista simples...
+
+```{python}
+matrix1.tolist()
+```
+
+Gerar números aleatórios...
+
+```{python}
+aleatórios = np.random.rand(100)
+```
+
+```{python}
+aleatórios
+```
+
+Particionar uma lista (array)
+
+```{python}
+aleatórios.reshape(10,10)
+```
+
+Gera matriz com zeros...
+
+```{python}
+np.zeros((2, 10))
+```
+
+Gera matriz com *uns*...
+
+```{python}
+np.ones((3, 4))
+```
+
+Diferença entre **list** e **array**
+
+```{python}
+import numpy as np
+```
+
+```{python}
+lista_teste = [1, 20, 300]
+```
+
+```{python}
+array_teste = np.array(lista_teste)
+```
+
+```{python}
+print(lista_teste)
+print(array_teste)
+```
+
+```{python}
+array_teste / 3
+```
+
+```{python}
+array_teste + array_teste
+```
+
+```{python}
+lista_teste / 3
+```
+
+Use **tab** para ver a diferença entre os métodos (funções) disponívem de uma lista e um array...
+
+```{python}
+lista_teste.
+
+array_teste.
+```
+
+```{python}
+lista_a = [23, 10, 200]
+lista_b = [10, 20, 30]
+
+lista_a + lista_b
+```
+
+```{python}
+array_a = np.array(lista_a)
+array_b = np.array(lista_b)
+array_a + array_b
+```
+
+```{python}
+[10, 20] + [30]
+```
+
+```{python}
+np.array([10, 20]) + np.array([30])
+```
+
+```{python}
+np.array([10, 20]) + 30
+```
+
+```{python}
+list(zip(['a','b','c'],[1, 2, 3],[10, 20, 30]))
+```
+
+```{python}
+matrix1.diagonal()
+```
+
+Objetos **array** podem ser acessados como listas, porém se comportam como matrizes matemáticas e seguem as regras aritméticas de algebra linear.
+
+Para saber mais:
+
+- [Quick start](https://docs.scipy.org/doc/numpy-dev/user/quickstart.html)
+- [Numpy Array](https://docs.scipy.org/doc/numpy/reference/generated/numpy.array.html)
+
+
+### 3.3 Visualizando números
+
+Podemos visualizar matrizes como imagens, uma vez que uma imagem nada mais são do que matrizes!!
+
+```{python}
+import matplotlib.pyplot as plt
+
+plt.imshow(matrix1)
+plt.gray()
+plt.colorbar()
+plt.show()
+```
+
+```{python}
+#plt.imshow(matrix1.T) #transposta
+plt.imshow(np.flipud(matrix1)) #de ponta cabeça
+plt.gray()
+plt.colorbar()
+plt.show()
+```
+
+```{python}
+plt.imshow([matrix1.diagonal()]) #diagonal
+plt.gray()
+plt.colorbar()
+plt.show()
+```
+
+```{python}
+plt.imshow([matrix2.diagonal()[0:10]*100,matrix1.diagonal()]) #diagonal
+plt.gray()
+plt.colorbar()
+plt.show()
+```
+
+```{python}
+matrix1.diagonal()
+```
+
+```{python}
+matrix2 = np.random.rand(100,100)
+
+plt.imshow(matrix2)
+plt.gray()
+plt.colorbar()
+plt.show()
+```
+
+```{python}
+plt.imshow(np.array([matrix2.diagonal()]).reshape(10, 10)) # diagonal
+plt.gray()
+plt.colorbar()
+plt.show()
+```
+
+```{python}
+def gera_imagem(matrix_entrada):
+    imgplot = plt.imshow(matrix_entrada)
+    #plt.gray()
+    imgplot.set_cmap('nipy_spectral')
+    plt.colorbar()
+    plt.show()
+```
+
+```{python}
+def media_maior(val):
+    if val > .5:
+        return val+3
+    else:
+        return val
+```
+
+```{python}
+v_media_maior = np.vectorize(media_maior)
+
+gera_imagem(v_media_maior(matrix2))
+```
+
+```{python}
+v_media_maior # Generator!!
+```
+
+Para saber mais sogre generators:
+    
+- [Generators](https://docs.python.org/3.6/tutorial/classes.html#generators)
+
+```{python}
+v_media_maior(matrix2)
+```
+
+```{python}
+#zoom, slicing
+gera_imagem(v_media_maior(matrix2[70:,:-70]))
+```
+
+### 3.4 Operações
+
+
+Soma o valor da matriz
+
+```{python}
+matrix1.sum()
+```
+
+```{python}
+matrix2.sum()
+```
+
+Mostra as dimensões da matriz
+
+```{python}
+matrix2.shape
+```
+
+Pega um elemento conforme posição (index)
+
+```{python}
+matrix2[1,1]
+```
+
+```{python}
+matrix2[10,10]
+```
+
+Encontrando maior número
+
+```{python}
+max(matrix2[0]) # max do Python 3
+```
+
+```{python}
+matrix2[0].max() #max do NumPy array
+```
+
+```{python}
+matrix2.max() #max da matriz toda
+```
+
+Exibindo a matriz, note que é um NumPy array.
+
+```{python}
+matrix2
+```
+
+**ndarray** é o tipo de dado do NumPy array
+
+```{python}
+type(matrix2)
+```
+
+```{python}
+type([10,20])
+```
+
+```{python}
+type((9,3))
+```
+
+Exibe as dimensões da matriz
+
+```{python}
+matrix2.ndim
+```
+
+Exibe o tamanho da matriz
+
+```{python}
+matrix2.size
+```
+
+Tipo de dados da matriz
+
+```{python}
+matrix2.dtype.name
+```
+
+Criação de NumPy arrays
+
+```{python}
+ar1 = np.array([10,20,30])
+ar2 = np.array([1, 2, 3])
+```
+
+Operações básicas com matrizes (comportamente matemático)
+
+```{python}
+ar1 * ar2
+```
+
+```{python}
+ar1 - ar2
+```
+
+ar1 . ar2
+
+```{python}
+ar1.dot(ar2)
+```
+
+```{python}
+ar3 = np.array([[2],[4],[8]])
+ar4 = np.array([[1,2,3],[10,20,30],[100,200,300]])
+```
+
+```{python}
+ar3
+```
+
+```{python}
+ar4
+```
+
+```{python}
+ar3 * ar4
+```
+
+```{python}
+ar4 * ar3
+```
+
+```{python}
+ar4.dot(ar3)
+```
+
+Calcular determinante
+
+```{python}
+np.linalg.det(np.array([[200,600],[100,900]]))
+```
+
+```{python}
+-100 * ar4
+```
+
+Retorna os valores dentro de um intervalo especificado.
+
+```{python}
+np.linspace( 0, 25, 7 )
+```
+
+Operações de concatenação
+
+```{python}
+ar4
+```
+
+```{python}
+np.concatenate((ar4, ar4*2))
+```
+
+```{python}
+np.concatenate((ar4, np.ones((3,3)) ))
+```
+
+```{python}
+#Atenção com "( )"
+np.concatenate(( np.ones((3,3)), np.zeros((3,3)) ))
+```
+
+Empilha matrizes
+
+```{python}
+np.vstack((ar4, [-11,-22,-33]))
+```
+
+```{python}
+np.hstack((ar4, [[11],[22],[33]]))
+```
+
+```{python}
+ar10=np.hstack((ar3, ar4))
+```
+
+```{python}
+ar10
+```
+
+```{python}
+ar10.size
+```
+
+```{python}
+len(ar10)
+```
+
+```{python}
+len(ar10[0])
+```
+
+Calcula matriz transposta
+
+```{python}
+ar10.T
+```
+
+```{python}
+ar10.shape
+```
+
+Somando diferentes dimenções
+
+```{python}
+ar10
+```
+
+```{python}
+np.sum(ar10, axis=0)
+```
+
+```{python}
+np.sum(ar10, axis=1)
+```
+
+```{python}
+np.sum(ar10.T, axis=0)
+```
+
+```{python}
+np.sum(ar10.T, axis=1)
+```
+
+```{python}
+arr1 = np.array([3, 5, 5, 1, 10, 4, 4, 3, 0, 0, 0, 5, 2, 5, 1])
+
+np.bincount(arr1)
+```
+
+```{python}
+np.bincount([1,1,1,2,3,3,5,5,5,5])
+```
+
+Interatividade com a biblioteca (módulo) **ipywidgets**
+
+```{python}
+# !pip install ipywidgets
+
+```
+
+```{python}
+# !jupyter nbextension enable --py widgetsnbextension
+```
+
+```{python}
+from ipywidgets import widgets
+
+t = np.arange(0.0, 1.0, 0.01)
+
+def pltsin(f):
+    plt.plot(t, np.sin(2*np.pi*t*f))
+    plt.show()
+    
+widgets.interact(pltsin, f=(1, 10, .1))
+```
+
+```{python}
+widgets.IntSlider()
+
+```
+
+Para saber mais sobre interfaces interativas com **ipywidgets**
+
+- [Ipywidgets documentation](https://ipywidgets.readthedocs.io/en/stable/)
+- [Master Examples](https://github.com/jupyter-widgets/ipywidgets/blob/master/docs/source/examples/Index.ipynb)
+
+
+Visualizando e gerando imagem com base em equações e funções matemática
+
+```{python}
+x, y = np.meshgrid(np.linspace(-2,2,200), np.linspace(-2,2,200))
+x, y = x - x.mean(), y - y.mean()
+z = x * np.exp(np.cos(-x)*3 - np.sin(y)*3)
+
+gera_imagem(z)
+```
+
+```{python}
+import numpy as np
+import matplotlib.pyplot as plt
+
+visitantes_hora=[2,2,3,5,3,10,12,14,13,3,2] #Visitantes das 8 as 18hrs
+visitantes_acumulado = np.cumsum(visitantes_hora)
+
+plt.plot(visitantes_hora)
+plt.plot(visitantes_acumulado)
+plt.show()
+```
+
+**Desafio:** Cada visitante traz dois acompanhantes em média, como fica o gráfico com esta informação adicional?
+
+
+Carregando arquivos texto com dados numéricos
+
+```{python}
+mc = np.loadtxt("data/mc.txt")
+```
+
+```{python}
+mc
+```
+
+```{python}
+import matplotlib.pyplot as plt
+
+plt.imshow(mc)
+plt.gray()
+plt.colorbar()
+plt.show()
+```
+
+```{python}
+gera_imagem(mc)
+```
+
+```{python}
+import matplotlib.pyplot as plt
+
+def zoom(val):
+    plt.imshow(mc[val:,:-val])
+    plt.gray()
+    plt.colorbar()
+    plt.show()
+
+widgets.interact(zoom, val=(1, 100,10))
+```
+
+```{python}
+ae = np.loadtxt("data/ae.txt")
+```
+
+```{python}
+ae
+```
+
+```{python}
+plt.imshow(ae)
+plt.gray()
+plt.colorbar()
+plt.show()
+```
+
+```{python}
+gera_imagem(ae)
+```
+
+```{python}
+gera_imagem(ae.T)
+```
+
+Gerando e visualizando dados em matrizes com "list comprehension"
+
+```{python}
+img_data = [[i*j for i in range(-100,100)] for j in range(-100,100)]
+```
+
+```{python}
+plt.imshow(img_data)
+plt.gray()
+plt.colorbar()
+plt.show()
+```
+
+```{python}
+gera_imagem(img_data)
+```
+
+```{python}
+import math
+img_data = [[math.sin(i)*math.cos(j) for i in range(10)] for j in range(10)]
+
+plt.imshow(img_data)
+plt.gray()
+plt.colorbar()
+plt.show()
+```
+
+```{python}
+gera_imagem(img_data)
+```
+
+```{python}
+img_data = [[i**2 * j**2 for i in range(-10,10)] for j in range(-10,10)]
+
+plt.imshow(img_data)
+plt.gray()
+plt.colorbar()
+plt.show()
+
+gera_imagem(img_data)
+```
+
+**Desafio:** Como gerar uma imagem e salvar em txt??
+
+**Desafio:** Como obter um *crop* da imagem??
+
+**Desafio:** Cruar uma função que gere um gráfico "recurrence plot" e "cross recurrence plot"?? [Recurrence Plot](http://www.recurrence-plot.tk/glance.php)
+
+
+```{python}
+
+```
+
+```{python}
+
+```
+
+```{python}
+
+```

@@ -1,0 +1,209 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+
+```{r}
+library(tidyverse)
+library(tidymodels)
+library(probably)
+```
+
+
+# Simple Math equations
+
+```{r}
+hip <- function(a= 3,b = 4) {
+  (a ^2 + b ^ 2) %>%
+    sqrt() %>%
+    return()
+}
+
+hip()
+```
+
+```{r}
+set.seed(42)
+pi_calculator <- function(tries = 1e+4) {
+  x_axis <- runif(tries,min = -1,max = 1)
+  y_axis <- runif(tries,min = -1,max = 1)
+  inside_circle <- function(x,y){
+    return(x^2 + y^2 < 1)
+  }
+  inside_circle <- inside_circle(x_axis,y_axis)
+  pi1 = inside_circle %>% mean() * 4
+  result <- list(pi_aprox = pi1, x_vector = x_axis,y_vector = y_axis,inside = inside_circle)
+  return(result)
+}
+```
+
+```{r}
+a <- pi_calculator(1e+4)
+a$pi_aprox
+```
+
+```{r}
+library(plotrix)
+```
+
+```{r}
+
+plot(
+  a$x_vector,
+  a$y_vector,
+  xlim = c(-1, 1),
+  ylim = c(-1, 1),
+  pch = 19,
+  asp = 1,
+  col= ifelse(a$inside,"green","orange")
+)
+draw.circle(x= 0,y = 0,radius = 1,border = "blue")
+rect(xleft = -1,ybottom = -1,xright = 1,ytop = 1,border = "red")
+```
+
+
+```{r}
+set.seed(42)
+pi_calculator_monte_carlo <- function(tries = 1e+4,times = 10) {
+  results = NULL
+  for (i in times) {
+    x_axis <- runif(tries,min = -1,max = 1)
+    y_axis <- runif(tries,min = -1,max = 1)
+    inside_circle <- function(x,y){
+      return(x^2 + y^2 < 1)
+    }
+    inside_circle <- inside_circle(x_axis,y_axis)
+    pi1 = inside_circle %>% mean() * 4
+    results = rbind(results,pi1)
+  }
+    return(results %>% mean())
+}
+```
+
+
+```{r}
+pi_calculator_monte_carlo(100000,10)
+```
+
+```{r}
+titan <- Titanic %>% as_tibble()
+```
+
+# Titanic logistic regression
+
+```{r}
+titanic <- read_csv(file = "data/titanic.csv")
+```
+
+```{r}
+titanic <- titanic %>% 
+  mutate(Survived = Survived %>% as_factor(),
+         Pclass = Pclass %>% as_factor(),
+         Sex = Sex %>% as_factor())
+```
+
+```{r}
+titanic_split <- initial_split(titanic,prop = 0.8)
+titanic_split
+```
+
+```{r}
+
+titanic_recipe <- training(titanic_split) %>%
+recipe(Survived ~.) %>%
+  prep()
+
+```
+
+```{r}
+testing_titanic <- titanic_recipe %>% bake(titanic_split %>% training())
+training_titanic <- titanic_recipe %>% juice
+```
+
+```{r}
+logistic_regression <- logistic_reg(mode = "classification") %>% 
+  set_engine("glm")
+```
+
+```{r}
+model_fit <- logistic_regression %>% 
+  fit(Survived ~Age + Pclass + Sex,data = training_titanic)
+```
+
+```{r}
+model_fit
+```
+
+```{r}
+test_results <- model_fit %>% 
+  predict(testing_titanic,type = "prob") %>% 
+  bind_cols(testing_titanic %>% select(Survived))
+  
+```
+
+```{r}
+test_results %>% 
+  mutate(pred_05 = make_two_class_pred(.pred_0,levels(Survived),threshold = .5))
+```
+
+
+```{r}
+#test_results %>% accuracy(truth = Survived, .pred_0)
+```
+
+```{r}
+# test_results %>% conf_mat(truth = Survived, .pred_class)
+
+```
+
+```{r}
+test_results %>% 
+  roc_curve(Survived,.pred_1) %>% 
+  autoplot()
+```
+
+```{r}
+threshold_data <- test_results %>%
+  threshold_perf(Survived,
+                 .pred_0,
+                 , thresholds = seq(0.5, 1, by = 0.0025))
+```
+
+```{r}
+threshold_data %>%
+  group_by(.metric) %>% 
+  summarise(best_result = max(.estimate))
+```
+
+
+```{r}
+
+threshold_data <- threshold_data %>%
+  filter(.metric != "distance") %>%
+  mutate(group = case_when(
+    .metric == "sens" | .metric == "spec" ~ "1",
+    TRUE ~ "2"
+  ))
+
+max_j_index_threshold <- threshold_data %>%
+  filter(.metric == "j_index") %>%
+  filter(.estimate == max(.estimate)) %>%
+  pull(.threshold)
+```
+
+```{r}
+ggplot(threshold_data, aes(x = .threshold, y = .estimate, color = .metric, alpha = group)) +
+  geom_line() +
+  theme_minimal() +
+  scale_color_viridis_d(end = 0.9) +
+  scale_alpha_manual(values = c(.4, 1), guide = "none") +
+  geom_vline(xintercept = max_j_index_threshold, alpha = .6, color = "grey30") +
+  labs(
+    x = "'Good' Threshold\n(above this value is considered 'good')",
+    y = "Metric Estimate",
+    title = "Balancing performance by varying the threshold",
+    subtitle = "Sensitivity or specificity alone might not be enough!\nVertical line = Max J-Index"
+  )
+```
+
