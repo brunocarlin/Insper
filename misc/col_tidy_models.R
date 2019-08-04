@@ -1,22 +1,24 @@
 library(ISLR)
+library(tidymodels)
+library(plotmo)
 data("Credit")
 
 Credit
 
-fit <- leaps::regsubsets(Balance ~.,
-                  data = Credit,
-                  method = "exhaustive",
-                  nvmax = 11)
-resumo <- summary(fit)
-resumo$adjr2
-
-
-fit <- leaps::regsubsets(Balance ~.,
-                  data = Credit,
-                  method = "forward",
-                  nvmax = 11)
-resumo <- summary(fit)
-resumo$adjr2
+# fit <- leaps::regsubsets(Balance ~.,
+#                   data = Credit,
+#                   method = "exhaustive",
+#                   nvmax = 11)
+# resumo <- summary(fit)
+# resumo$adjr2
+# 
+# 
+# fit <- leaps::regsubsets(Balance ~.,
+#                   data = Credit,
+#                   method = "forward",
+#                   nvmax = 11)
+# resumo <- summary(fit)
+# resumo$adjr2
 
 
 
@@ -57,9 +59,14 @@ matriz_errors <- glmnet_model %>%
   bind_cols(credit_testing) %>% 
   unnest() %>% 
   group_by(penalty) %>% 
-  metrics(truth = Balance,estimate = .pred)
+  metrics(truth = Balance, estimate = .pred)
 
 
-matriz_errors %>%
+results <- matriz_errors %>%
   filter(.metric == "rmse") %>% 
-  arrange(.estimate) %>% View()
+  arrange(penalty)
+
+results %>% 
+  ggplot() +
+  aes(x = penalty,y = .estimate) +
+  geom_line()
