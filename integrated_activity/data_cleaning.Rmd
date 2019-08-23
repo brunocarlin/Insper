@@ -1,0 +1,130 @@
+---
+title: "Atividade Integradora- Primeira Parte"
+author: "Bruno Carlin"
+date: "22/08/2019"
+output: html_document
+---
+
+
+# Setup
+
+```{r include=FALSE}
+library(tictoc)
+library(knitr)
+tictoc::tic.clearlog()
+knitr::knit_hooks$set(timeit = local({
+  function(before, options) {
+    if (before) {
+      now <<- tic(options$label)
+    } else {
+      after = toc(log = TRUE, quiet = TRUE)
+      #paste(tail(tic.log(format = TRUE),1))
+    }
+  }})
+)
+
+knitr::opts_chunk$set(
+  echo = TRUE,
+  timeit = TRUE
+)
+```
+
+# Coleta de Dados
+
+```{r message=FALSE, warning=FALSE, timeit=FALSE}
+library(tidyverse)
+library(arrow)
+```
+
+```{r Read excel}
+df <- readxl::read_excel("BD_PRE.xlsx")
+```
+
+
+```{r Skimr intro}
+df %>% 
+  skimr::skim() %>% 
+  skimr::kable()
+```
+
+
+
+```{r Explore plot}
+df %>% 
+  DataExplorer::plot_intro()
+```
+
+# Enconding Variables
+
+## Type 1 variables are fine for the most part, do mind that some have no variation in them e.g Q1
+
+```{r TIMEIT = FALSE}
+df$Q1%>% unique()
+```
+
+
+## Type 2 continous variables that we need to replace 99 for NA
+
+```{r timeit =FALSE}
+replace_99 <- function(col_row){
+x <- if_else(condition = col_row == 99,
+        NA_real_,
+        col_row)
+return(x)
+}
+```
+
+```{r Encode NA Type 2}
+df_2 <- df %>% 
+  mutate_at(.vars = vars(B1_1,B1_2,C1_1,C1_2,D2_1,D2_2,D2_3,E1_1,E1_2,E1_3,A2_1,A2_2,A2_3,A3,A4,A5,F2,F4,F6),.funs = replace_99)
+```
+
+```{r timeit = FALSE}
+df_2$B1_1 %>% unique()
+```
+
+## Type 3
+
+Probably should encode missing
+
+```{r Skim type 3}
+df_2$H2 %>% skimr::skim()
+```
+
+## More treatments
+
+Maybe encode other code like the 99999 as missing
+
+to be discussed.
+
+## Creating response variable
+
+```{r Create Response}
+df_export <- df_2 %>% 
+  mutate_at(.vars = vars(J1),.funs = replace_99) %>% 
+  mutate(J1 = case_when(J1 >= 8 ~ 1,
+                        J1 < 8 ~ 0))
+```
+
+```{r Writing Feather}
+write_feather(df_export,"integrated.feather")
+```
+
+```{r Reading Feather}
+read_feather("integrated.feather")
+```
+
+
+# Timing
+
+```{r Table of timings, warning=FALSE, timeit=FALSE}
+tic.log(format = TRUE) %>% 
+  unlist() %>% 
+  enframe(name = NULL) %>% 
+  separate(value,into = c("chunk_names","seconds_elapsed"),sep = ": ") %>%
+  separate(seconds_elapsed,into = c("seconds_elapsed"),sep = " ") %>% 
+  mutate(seconds_elapsed = seconds_elapsed %>% as.numeric()) %>% 
+  arrange(-seconds_elapsed)
+```
+
+
