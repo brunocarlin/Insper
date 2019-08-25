@@ -1,0 +1,207 @@
+---
+title: "Wine Random Forest"
+author: "Bruno"
+date: "09/08/2019"
+output: html_document
+---
+```{r setup, include=FALSE}
+library(tictoc)
+knitr::knit_hooks$set(timeit = local({
+  function(before, options) {
+    if (before) {
+      now <<- tic(options$label)
+    } else {
+      after = toc(log = TRUE, quiet = TRUE)
+      paste(tail(tic.log(format = TRUE),1))
+    }
+  }})
+)
+
+knitr::opts_chunk$set(timeit = TRUE)
+```
+
+
+# Wine Data
+
+```{r Data Reading}
+library(tidyverse)
+library(tidymodels)
+wine <- read_delim("data/winequality-red.csv",
+                              ";", 
+                              escape_double = FALSE,
+                              trim_ws = TRUE)
+```
+
+
+```{r}
+wine
+```
+
+
+```{r Data Preparation}
+wine <- wine %>% 
+  mutate(quality = if_else(quality > 6,"good","bad") %>% as_factor())
+wine_split <- initial_split(wine, prop = 0.8)
+
+
+wine_recipe <- training(wine_split) %>%
+recipe(quality~.) %>%
+  #step_center(all_numeric(), -all_outcomes()) %>%
+  #step_scale(all_numeric(), -all_outcomes()) %>%
+  prep()
+
+wine_testing <- wine_recipe %>%
+  bake(testing(wine_split)) 
+
+wine_training <- wine_recipe %>% juice()
+
+glimpse(wine_training)
+glimpse(wine_testing)
+```
+
+```{r Functions to predict}
+testing_metrics <- function(model_fit_wine,testing_df) {
+  
+wine_class <- model_fit_wine %>% 
+  predict(wine_testing,type = "class") 
+
+wine_probs <- model_fit_wine %>% 
+  predict(wine_testing,type = "prob")
+
+wine_df <- bind_cols(wine_class,wine_probs,testing_df %>% select(quality))
+
+return(wine_df)
+}
+
+results_print <- function(classification_model){
+model_results <- classification_model %>% 
+  testing_metrics(testing_df = wine_testing) 
+
+model_results
+
+matrix_results <- model_results %>% 
+  conf_mat(quality,.pred_class)
+
+matrix_results
+
+metrics_results <- model_results %>% 
+  metrics(quality,.pred_class,.pred_bad)
+
+metrics_results
+
+roc_results <- model_results %>% 
+  roc_curve(truth = quality,.pred_bad)
+
+roc_results
+
+roc_curve_plot <- roc_results %>% 
+  ggplot(aes(x = 1 - specificity, y = sensitivity)) +
+  geom_path() +
+  geom_abline(lty = 3) +
+  coord_equal() +
+  theme_bw()
+
+lista <- list(model_pred = model_results,
+     confusion_matrix = matrix_results,
+     predicted_metrics = metrics_results,
+     roc = roc_results,
+     roc_plot = roc_curve_plot
+     )
+return(lista)
+}
+```
+
+
+```{r Decision Tree}
+decision_tree <- decision_tree(mode = "classification") %>% 
+  set_engine("rpart") %>% 
+  fit(quality ~ .,data = wine_training)
+
+decision_tree
+
+decision_tree %>% results_print()
+```
+
+```{r Random Forest}
+random_forest <- rand_forest(mode = "classification",mtry = 11) %>% 
+  set_engine("randomForest") %>% 
+  fit(quality ~ .,data = wine_training)
+
+rand_forest
+
+random_forest %>% results_print()
+```
+
+```{r}
+tic.log() %>% unlist() %>% as_tibble()
+```
+
+
+# Boston Data
+
+```{r}
+library(MASS)
+```
+
+
+```{r Data Preparation}
+
+df_split <- Boston %>% initial_split(prop = 0.8)
+
+df_recipe <- training(Boston_split) %>%
+  recipe(medv~.) %>%
+  #step_center(all_numeric(), -all_outcomes()) %>%
+  #step_scale(all_numeric(), -all_outcomes()) %>%
+  prep()
+
+df_testing <- df_recipe %>%
+  bake(testing(df_split)) 
+
+df_training <- df_recipe %>% juice()
+
+glimpse(df_training)
+glimpse(df_testing)
+```
+
+```{r}
+
+mse_vec <- function(truth, estimate, na_rm = TRUE, ...) {
+  
+  mse_impl <- function(truth, estimate) {
+    mean((truth - estimate) ^ 2)
+  }
+  
+  metric_vec_template(
+    metric_impl = mse_impl,
+    truth = truth, 
+    estimate = estimate,
+    na_rm = na_rm,
+    cls = "numeric",
+    ...
+  )
+  
+}
+random_forest <- rand_forest(mode = "regression") %>% 
+  set_engine("randomForest") %>% 
+  fit(medv ~ .,data = df_training)
+
+random_forest
+
+
+
+random_forest %>% 
+  predict(df_testing) %>% 
+  bind_cols(df_testing %>% dplyr::select(medv)) %>% 
+  mse_vec(truth = medv,estimate =.pred)
+
+
+
+lin_reg <- linear_reg(mode = "regression") %>% 
+  set_engine("lm") %>% 
+  fit(medv ~ .,data = df_training)
+
+lin_reg %>% 
+  predict(df_testing) %>% 
+  bind_cols(df_testing %>% dplyr::select(medv)) %>% 
+  yardstick::mse(truth = medv,.pred)
+```

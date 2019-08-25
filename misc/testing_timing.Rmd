@@ -1,0 +1,95 @@
+---
+title: "Class 5"
+author: "Bruno"
+date: "09/08/2019"
+output: html_document
+---
+
+```{r}
+library(tictoc)
+```
+
+```{r setup, include=FALSE}
+knitr::knit_hooks$set(timeit = local({
+  function(before, options) {
+    if (before) {
+      now <<- tic(options$label)
+    } else {
+      after = toc(log = TRUE, quiet = TRUE)
+      paste(tail(tic.log(format = TRUE),1))
+    }
+  }})
+)
+
+knitr::opts_chunk$set(echo = FALSE,timeit = TRUE)
+```
+
+Test it:
+
+```{r test-a, timeit = TRUE}
+Sys.sleep(2)
+```
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+tic.log() %>% as_tibble(.name_repair = "universal")
+```
+
+
+```{r}
+library(tidymodels)
+```
+
+
+```{r gamma calculation, timeit = TRUE}
+n <- 500
+alpha <- 2
+beta <- 3
+
+x <- rgamma(n = n,shape = alpha,rate = beta)
+curve(pnorm(x,40,16), from = 0, to = 90,
+      lwd = 3, ylab = "")
+
+x1 <- rnorm(10,40,16)
+plot(ecdf(x1),col = "red",add = TRUE)
+
+x2 <- rnorm(50,40,16)
+plot(ecdf(x2),col = "grey",add = TRUE)
+
+x3 <- rnorm(100,40,16)
+plot(ecdf(x3),col = "purple",add = TRUE)
+
+x4 <- rnorm(500,40,16)
+plot(ecdf(x4),col = "blue",add = TRUE)
+```
+
+```{r}
+tail(unlist(tic.log()),1)
+
+head(tic.log(),1)
+```
+
+```{r}
+sampler <- rnorm(500,16,40) %>% as_tibble()
+boots <- bootstraps(sampler, times = 1000)
+results <- map_dbl(boots$splits,function(x) {
+          x %>%
+    as_tibble() %>%
+    pluck("value") %>%
+    mean()
+        })
+
+results %>% mean
+```
+
+
+```{r}
+curve((1-1/x)^x,from = 10, to = 1000)
+```
+
+
+
+

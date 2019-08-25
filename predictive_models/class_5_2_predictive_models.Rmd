@@ -1,0 +1,169 @@
+---
+title: "R Notebook"
+output:
+  html_document:
+    df_print: paged
+  pdf_document: default
+---
+
+```{r}
+library(tidyverse)
+library(tidymodels)
+```
+
+```{r}
+load("data/santander.RData")
+```
+
+
+```{r}
+dados %>% 
+  skimr::skim()
+```
+
+```{r}
+data_balanced <- ROSE::ovun.sample(formula = target ~.,data = dados) 
+```
+
+```{r}
+data_balanced$data
+```
+
+```{r}
+dados_balanceados <- data_balanced$data
+```
+
+```{r}
+dados_balanceados <- dados_balanceados %>% 
+  mutate(target = target %>% as.factor())
+```
+
+```{r}
+dados_balanceados %>% 
+  select(target) %>% 
+  table()
+```
+```{r}
+split_ii <- dados_balanceados %>% initial_split(prop = 0.8)
+train_data <- training(split_ii)
+test_data <- testing(split_ii)
+
+prepped_data <-  train_data %>% 
+  recipe(target ~ .) %>% 
+  step_center(all_predictors()) %>% 
+  step_scale(all_predictors()) %>%
+  step_corr(all_predictors()) %>% 
+  prep()
+
+train_data <- prepped_data %>% juice()
+
+test_data <- prepped_data %>% bake(new_data = test_data)
+```
+
+```{r}
+model_logistic_regression <- logistic_reg(mode = "classification") %>% 
+  fit(target ~.,data = train_data)
+
+model_logistic_regression %>% 
+  predict(test_data,type = "prob") %>% 
+  bind_cols(test_data) %>% 
+  roc_auc(target,.pred_0)
+```
+
+
+```{r}
+model_lasso <- logistic_reg(mode = "classification",mixture = 0) %>%
+  set_engine("glmnet") %>% 
+  fit(target ~.,data = train_data)
+
+model_lasso %>% 
+  multi_predict(test_data,type = "prob") %>% 
+  bind_cols(test_data) %>% 
+  unnest() %>% 
+  group_by(penalty) %>% 
+  do(ok = roc_auc(.,target,.pred_0)) %>% 
+  unnest() %>% 
+  arrange(-.estimate)
+```
+
+
+```{r}
+model_ridge <- logistic_reg(mode = "classification",mixture = 1) %>%
+  set_engine("glmnet") %>% 
+  fit(target ~.,data = train_data)
+
+model_ridge %>% 
+  multi_predict(test_data,type = "prob") %>% 
+  bind_cols(test_data) %>% 
+  unnest() %>% 
+  group_by(penalty) %>% 
+  do(ok = roc_auc(.,target,.pred_0)) %>% 
+  unnest() %>% 
+  arrange(-.estimate)
+```
+
+```{r}
+model_tree <- parsnip::decision_tree(mode = "classification") %>% 
+  fit(target ~.,data = train_data)
+
+model_tree %>% 
+  predict(test_data,type = "prob") %>% 
+  bind_cols(test_data) %>% 
+  roc_auc(target,.pred_0)
+```
+
+```{r}
+model_bagging <- parsnip::rand_forest(mode = "classification",mtry = 200) %>%
+  set_engine("ranger") %>% 
+  fit(target ~.,data = train_data)
+
+model_bagging %>% 
+  predict(test_data,type = "prob") %>% 
+  bind_cols(test_data) %>% 
+  roc_auc(target,.pred_0)
+
+
+model_bagging %>% 
+  predict(teste,type = "prob") %>% 
+  bind_cols(teste) %>% 
+  roc_auc(target,.pred_0)
+```
+
+```{r}
+model_forest <- parsnip::rand_forest(mode = "classification") %>%
+  set_engine("ranger") %>% 
+  fit(target ~.,data = train_data)
+
+model_forest %>% 
+  predict(test_data,type = "prob") %>% 
+  bind_cols(test_data) %>% 
+  roc_auc(target,.pred_0)
+```
+
+
+
+```{r}
+model_boost <- parsnip::boost_tree(mode = "classification") %>%
+  set_engine("xgboost") %>% 
+  fit(target ~.,data = train_data)
+
+model_boost %>% 
+  predict(test_data,type = "prob") %>% 
+  bind_cols(test_data) %>% 
+  roc_auc(target,.pred_0)
+```
+
+## Best Model
+
+```{r}
+ok <- model_forest %>% 
+  predict(prepped_data %>% bake(new_data = teste),type = "prob") %>%
+  mutate(result = if_else(.pred_1 > 0.375,
+                          1,
+                          0)) %>% 
+  select(result) %>% table()
+
+
+  write.csv(ok,"bruno_henrique.csv")
+```
+

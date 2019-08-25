@@ -1,0 +1,96 @@
+---
+title: "Ames"
+author: "Bruno"
+date: "23/08/2019"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+library(AmesHousing)
+library(tidymodels)
+```
+
+
+```{r}
+ames <- ames %>% mutate(Sale_Price = log(Sale_Price))
+ames_split <- initial_split(ames, prop = 0.8,strata = )
+
+
+ames_recipe <- training(ames_split) %>%
+recipe(Sale_Price ~.) %>%
+  #step_center(all_numeric(), -all_outcomes()) %>%
+  #step_scale(all_numeric(), -all_outcomes()) %>%
+  prep()
+
+ames_testing <- ames_recipe %>%
+  bake(testing(ames_split)) 
+
+ames_training <- ames_recipe %>% juice()
+```
+
+```{r}
+linear
+lasso
+ridge
+floresta
+```
+
+```{r}
+linear_regression <- linear_reg(mode = "regression",penalty = 0,mixture = 0) %>% 
+  set_engine("glmnet") %>% 
+  fit(Sale_Price~ .,data = ames_training)
+
+linear_regression$spec
+
+linear_regression %>% 
+  predict(new_data = ames_testing) %>% 
+  bind_cols(ames_testing) %>% 
+  metrics(truth = Sale_Price,estimate = .pred)
+```
+```{r}
+ridge_regression <- linear_reg(mode = "regression",mixture = 1) %>% 
+  set_engine("glmnet") %>% 
+  fit(Sale_Price~ .,data = ames_training)
+
+ridge_regression %>% 
+  multi_predict(new_data = ames_testing) %>% 
+  bind_cols(ames_testing) %>%
+  unnest() %>% 
+  group_by(penalty) %>% 
+  do(ok = metrics(.,truth = Sale_Price,estimate = .pred)) %>% 
+  unnest() %>%
+  spread(key = .metric,value = .estimate) %>% 
+  arrange(rmse) %>% 
+  head(1)
+```
+
+
+```{r}
+lasso_regression <- linear_reg(mode = "regression",mixture = 0) %>% 
+  set_engine("glmnet") %>% 
+  fit(Sale_Price~ .,data = ames_training)
+
+lasso_regression %>% 
+  multi_predict(new_data = ames_testing) %>% 
+  bind_cols(ames_testing) %>%
+  unnest() %>% 
+  group_by(penalty) %>% 
+  do(ok = metrics(.,truth = Sale_Price,estimate = .pred)) %>% 
+  unnest() %>%
+  spread(key = .metric,value = .estimate) %>% 
+  arrange(rmse) %>% 
+  head(1)
+```
+
+
+```{r}
+random_forest <- rand_forest(mode = "regression") %>% 
+  set_engine("ranger") %>% 
+  fit(Sale_Price~ .,data = ames_training)
+
+random_forest %>% 
+  predict(new_data = ames_testing) %>% 
+  bind_cols(ames_testing) %>%
+  metrics(truth = Sale_Price,estimate = .pred)
+```
