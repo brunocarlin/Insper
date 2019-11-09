@@ -1,0 +1,3 @@
+associatividade
+
+comutabilidade

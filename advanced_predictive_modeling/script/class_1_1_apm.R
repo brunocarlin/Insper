@@ -53,7 +53,7 @@ forest %>%
   bind_cols(spam_testing) %>% 
   metrics(truth = Class,estimate = .pred_class)
 
-# Baggign 1nn
+# Baggign 1nn - fixing needed
 x_trn <- spam_training %>% select(-Class) %>% as.matrix()
 x_tst <- spam_training %>% select(-Class) %>% as.matrix()
 
@@ -62,10 +62,23 @@ y_hat <- matrix(nrow = x_trn %>% nrow,ncol = B)
 
 pb <- txtProgressBar(min = 1,max = B,style = 3)
 for(i in 1:B){
+  xs <- sample(1:57,size = 25,replace = FALSE)
   boot <- sample(1:nrow(x_trn),size = nrow(x_trn),replace = TRUE)
-  y_hat[,i] <- as.character(knn(x_trn[boot,],x_tst,spam_training$Class[boot],k=1))
+  y_hat[,i] <- as.character(knn(x_trn[boot,xs],x_tst[,xs],spam_training$Class[boot],k=1))
   setTxtProgressBar(pb,i)
 }
 close(pb)
 
 err <- mean(apply(y_hat, 1, function(row) names(sort(table(row),decreasing = TRUE))[1]!= spam_testing$Class))
+
+# Random forest
+
+forest <- rand_forest(mode = "classification") %>% 
+  fit(Class ~ .,data = spam_training)
+
+forest %>% 
+  predict(spam_testing) %>% 
+  bind_cols(spam_testing) %>% 
+  metrics(truth = Class,estimate = .pred_class)
+
+
